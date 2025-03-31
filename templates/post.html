@@ -1,0 +1,82 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+{{ post.title }} 
+{% endblock %} 
+
+
+{% block content %}
+  <div class="post">
+    <!-- Заголовок поста -->
+    <h1>{{ post.title }}</h1>
+    
+    <!-- Метаданные: автор и дата публикации -->
+    <p class="meta">
+        {{ post.author }}, {{ post.date.strftime('%d.%m.%Y') }}
+    </p>
+    
+    <!-- Изображение поста с классом для стилизации -->
+    <div class="post-image">
+      <img class="img-responsive" src="{{ url_for('static', filename='images/' + post.image_id) }}" alt="{{ post.title }}">
+    </div>
+    
+    <!-- Текст поста -->
+    <div class="post-content">
+      <p>{{ post.text }}</p>
+    </div>
+    
+    <!-- Форма для отправки комментария -->
+    <div class="comment-form mt-4">
+        <h2>Оставьте комментарий</h2>
+        <form action="/add_comment" method="post">
+          <textarea name="comment_text" class="form-control mb-3" rows="4" placeholder="Введите ваш комментарий" required></textarea>
+          <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+      </div>
+      
+    <!-- BEGIN: Блок комментариев -->
+    <div class="comments-section my-5">
+        <h2>Комментарии</h2>
+        {% for comment in post.comments %}
+        <div class="m-4">
+            <div class="d-flex">
+            <!-- Аватар комментария -->
+            <div class="flex-shrink-0">
+                <img src="{{ url_for('static', filename='images/avatar.jpg') }}" 
+                    class="rounded-circle" width="80" height="80" alt="User Avatar">
+            </div>
+            <!-- Содержимое комментария -->
+            <div class="flex-grow-1 ms-3">
+                <h5>
+                {{ comment.author }} 
+                <small class="text-muted"><i><!-- Можно добавить дату комментария, если потребуется --></i></small>
+                </h5>
+                <p>{{ comment.text }}</p>
+                
+                <!-- Вложенные ответы к комментарию -->
+                {% if comment.replies %}
+                {% for reply in comment.replies %}
+                    <div class="d-flex mt-4">
+                    <div class="flex-shrink-0">
+                        <img src="{{ url_for('static', filename='images/avatar.jpg') }}" 
+                            class="rounded-circle" width="80" height="80" alt="User Avatar">
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5>
+                        {{ reply.author }} 
+                        <small class="text-muted"><i><!-- Дата ответа, если понадобится --></i></small>
+                        </h5>
+                        <p>{{ reply.text }}</p>
+                    </div>
+                    </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <!-- END: Блок комментариев -->
+  
+  {% endblock %}
